@@ -29,7 +29,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-[#F4F0E6] border-b-2 border-[#0A0A0A]">
+    <header className="fixed top-0 left-0 right-0 z-40 w-full bg-[#F4F0E6] border-b-2 border-[#0A0A0A]">
       <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 h-16 sm:h-20 flex items-center justify-between">
         {/* Brand Zone */}
         <a

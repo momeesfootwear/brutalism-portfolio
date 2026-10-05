@@ -1,85 +1,24 @@
 import React from 'react';
 import { ArrowDown, ArrowUpRight } from 'lucide-react';
 import { Project } from '../types';
+import { DEFAULT_PROJECTS } from '../constants/defaultData';
+
+export { DEFAULT_PROJECTS };
+export const PROJECTS = DEFAULT_PROJECTS;
 
 interface ProjectsSectionProps {
+  projects?: Project[];
   onSelectProject: (project: Project) => void;
   onSeeAllProjects: () => void;
 }
 
-export const PROJECTS: Project[] = [
-  {
-    id: 'velstrada',
-    number: '[ 01 ]',
-    title: 'VELSTRADA',
-    subtitle: 'LUXURY BRAND —',
-    description:
-      'A luxury brand focused on timeless design and elevated everyday essentials.',
-    tags: ['BRANDING', 'STRATEGY', 'PRODUCT DIRECTION'],
-    accentColor: '#EFFF00',
-    accentPosition: 'right',
-    fullDetails: {
-      category: 'Brand Strategy & Identity',
-      role: 'Brand Strategist & Creative Director',
-      timeline: '2025 – Present',
-      overview:
-        'VELSTRADA is a modern luxury lifestyle house grounded in understated elegance, structural silhouettes, and enduring material craftsmanship. Stripping away noisy ornamentation to spotlight precision tailoring and raw texture.',
-      challenge:
-        'Contemporary luxury markets are oversaturated with superficial logo-driven drops and short-lived trend cycles. The objective was to architect a high-longevity brand narrative with strict typographic restraint, premium haptic packaging, and an aspirational yet functional product hierarchy.',
-      solution:
-        'Engineered an architectural brand identity system using stark monochromatic contrasts, bespoke packaging die-lines, and a curated capsule release schedule that commands premium pricing through intentional scarcity.',
-      highlights: [
-        'Complete brand identity guidelines and visual positioning bible',
-        'Custom tactile packaging specifications and sensory unboxing experience',
-        'Direct-to-consumer digital commerce strategy with zero-discount philosophy',
-        'Lookbook art direction and minimalist material curation',
-      ],
-      metrics: [
-        '100% Bespoke Brand Artifacts',
-        'Ultra-Minimalist Visual Architecture',
-        'Sustainable High-Grade Materials',
-      ],
-    },
-  },
-  {
-    id: 'dinebill',
-    number: '[ 02 ]',
-    title: 'DineBill',
-    subtitle: 'CAFÉ BILLING POS SOFTWARE —',
-    description:
-      'A simple and efficient billing solution for cafés and small restaurants.',
-    tags: ['PRODUCT CONCEPT', 'BUSINESS STRATEGY', 'UI/UX', 'OPERATIONS'],
-    accentColor: '#304FFE',
-    accentPosition: 'right',
-    fullDetails: {
-      category: 'Product & SaaS POS Platform',
-      role: 'Product Lead & System Architect',
-      timeline: '2025 – Present',
-      overview:
-        'DineBill is a streamlined point-of-sale terminal software built explicitly to eliminate counter congestion, simplify split checks, and maintain zero-latency order dispatch in high-volume urban cafés.',
-      challenge:
-        'Traditional restaurant POS systems are bloated, require lengthy staff onboarding, run sluggishly on tablet hardware, and crash during peak morning rush hours when internet connections flicker.',
-      solution:
-        'Designed a high-contrast, thumb-optimized 2-tap billing workflow with instant receipt generation, local-first offline resilience, automated sales reconciliation, and clear visual order tickets for kitchen staff.',
-      highlights: [
-        'Sub-second order dispatch workflow designed for rapid baristas',
-        'Offline-first architecture with background reconciliation',
-        'Real-time table assignment & itemized split billing',
-        'Integrated inventory telemetry and morning prep warnings',
-      ],
-      metrics: [
-        '< 2s Average Order Checkout',
-        'Zero-Latency Offline Mode',
-        '99.9% Uptime During Rush Hours',
-      ],
-    },
-  },
-];
-
 export const ProjectsSection: React.FC<ProjectsSectionProps> = ({
+  projects,
   onSelectProject,
   onSeeAllProjects,
 }) => {
+  const displayProjects = projects && projects.length > 0 ? projects : DEFAULT_PROJECTS;
+
   return (
     <section
       id="projects"
@@ -107,7 +46,7 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({
               onClick={onSeeAllProjects}
               className="group inline-flex items-center gap-1.5 font-mono text-xs sm:text-sm font-bold tracking-wider uppercase text-[#0A0A0A] hover:text-[#304FFE] transition-colors cursor-pointer"
             >
-              <span>SEE ALL PROJECTS</span>
+              <span>SEE ALL PROJECTS ({displayProjects.length})</span>
               <ArrowUpRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.5] transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
             </button>
           </div>
@@ -115,8 +54,11 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({
 
         {/* Projects Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-10 pt-6 sm:pt-12">
-          {PROJECTS.map((project) => {
+          {displayProjects.map((project) => {
             const isYellow = project.accentColor === '#EFFF00';
+            const hasLiveUrl = Boolean(project.liveUrl) || project.id === 'dinebill';
+            const liveUrlTarget = project.liveUrl || 'https://dinebill.vercel.app/';
+
             return (
               <div
                 key={project.id}
@@ -133,9 +75,16 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({
                 {/* Card Content with Right Padding to account for accent block */}
                 <div className="p-5 sm:p-8 pr-9 sm:pr-18 flex flex-col h-full justify-between space-y-6 sm:space-y-8">
                   <div>
-                    {/* Project Number */}
-                    <div className="font-mono text-xs sm:text-sm font-bold tracking-widest text-[#0A0A0A] mb-2 sm:mb-4">
-                      {project.number}
+                    {/* Project Number & Category Badge */}
+                    <div className="flex items-center gap-2 mb-2 sm:mb-4">
+                      <span className="font-mono text-xs sm:text-sm font-bold tracking-widest text-[#0A0A0A]">
+                        {project.number}
+                      </span>
+                      {project.fullDetails?.category && (
+                        <span className="font-mono text-[10px] px-2 py-0.5 border border-[#0A0A0A] bg-white font-semibold text-[#0A0A0A] uppercase truncate max-w-[200px]">
+                          {project.fullDetails.category}
+                        </span>
+                      )}
                     </div>
 
                     {/* Project Title */}
@@ -166,9 +115,9 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({
                         <ArrowUpRight className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5]" />
                       </button>
 
-                      {project.id === 'dinebill' && (
+                      {hasLiveUrl && (
                         <a
-                          href="https://dinebill.vercel.app/"
+                          href={liveUrlTarget}
                           target="_blank"
                           rel="noopener noreferrer"
                           onClick={(e) => e.stopPropagation()}

@@ -7,6 +7,7 @@ export interface Project {
   tags: string[];
   accentColor: '#EFFF00' | '#304FFE';
   accentPosition: 'right';
+  liveUrl?: string;
   fullDetails: {
     category: string;
     role: string;
@@ -36,3 +37,7 @@ export interface GalleryItem {
   location?: string;
 }
 
+export interface SiteBranding {
+  tabTitle: string;
+  faviconUrl: string;
+}

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { X, ArrowUpRight, Check, ExternalLink, Globe, Smartphone, ShieldCheck, Zap } from 'lucide-react';
+import { X, ArrowUpRight, Globe, Smartphone, ShieldCheck, Zap } from 'lucide-react';
 import { Project } from '../types';
 
 interface ProjectModalProps {
@@ -20,6 +20,8 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) 
 
   const isVelstrada = project.id === 'velstrada';
   const isDineBill = project.id === 'dinebill';
+  const hasLiveUrl = Boolean(project.liveUrl) || isDineBill;
+  const liveUrl = project.liveUrl || 'https://dinebill.vercel.app/';
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 lg:p-8 bg-black/60 backdrop-blur-xs overflow-y-auto">
@@ -88,8 +90,8 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) 
             </div>
           </div>
 
-          {/* DineBill Live App Callout Banner */}
-          {isDineBill && (
+          {/* Live App Callout Banner (if project has liveUrl or is DineBill) */}
+          {hasLiveUrl && (
             <div className="p-4 sm:p-6 bg-[#304FFE] text-white border-2 border-[#0A0A0A] shadow-brutal-md flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="space-y-1">
                 <div className="flex items-center gap-2 font-mono text-[10px] sm:text-xs font-bold tracking-widest text-[#EFFF00] uppercase">
@@ -97,15 +99,15 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) 
                   <span>PRODUCTION WEB DEPLOYMENT</span>
                 </div>
                 <h4 className="font-heading font-black text-xl sm:text-2xl text-white uppercase tracking-tight">
-                  DineBill Live Application
+                  {project.title} Live Application
                 </h4>
-                <p className="font-mono text-xs text-white/90">
-                  Deployed on Vercel at https://dinebill.vercel.app/
+                <p className="font-mono text-xs text-white/90 truncate max-w-md">
+                  Accessible at {liveUrl}
                 </p>
               </div>
 
               <a
-                href="https://dinebill.vercel.app/"
+                href={liveUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-[#EFFF00] text-[#0A0A0A] font-mono font-bold text-xs uppercase border-2 border-[#0A0A0A] shadow-brutal-sm hover:bg-white hover:text-[#0A0A0A] transition-all shrink-0 cursor-pointer w-full sm:w-auto"
@@ -170,6 +172,30 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) 
                 ))}
               </div>
             </div>
+
+            {/* Key Metrics (if available) */}
+            {project.fullDetails.metrics && project.fullDetails.metrics.length > 0 && (
+              <div>
+                <h4 className="font-mono text-xs font-bold tracking-widest text-[#0A0A0A] uppercase mb-3">
+                  // PERFORMANCE & ARCHITECTURE METRICS
+                </h4>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  {project.fullDetails.metrics.map((metric, idx) => (
+                    <div
+                      key={idx}
+                      className="p-3 bg-white border-2 border-[#0A0A0A] shadow-brutal-sm font-mono"
+                    >
+                      <div className="text-[10px] text-gray-500 font-bold uppercase">
+                        MEASURED IMPACT {idx + 1}
+                      </div>
+                      <div className="text-xs sm:text-sm font-black text-[#0A0A0A] mt-1">
+                        {metric}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* VELSTRADA Interactive Brand System Showcase */}
             {isVelstrada && (
@@ -256,15 +282,15 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) 
 
         {/* Modal Footer */}
         <div className="p-4 sm:p-6 border-t-2 border-[#0A0A0A] bg-[#F4F0E6] flex items-center justify-between gap-4">
-          {isDineBill ? (
+          {hasLiveUrl ? (
             <a
-              href="https://dinebill.vercel.app/"
+              href={liveUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 px-5 py-2.5 bg-[#304FFE] text-white font-mono font-bold text-xs uppercase border-2 border-[#0A0A0A] shadow-brutal-sm hover:bg-[#0A0A0A] transition-colors cursor-pointer"
+              className="flex items-center gap-2 px-4 sm:px-5 py-2.5 bg-[#304FFE] text-white font-mono font-bold text-xs uppercase border-2 border-[#0A0A0A] shadow-brutal-sm hover:bg-[#0A0A0A] transition-colors cursor-pointer truncate max-w-xs sm:max-w-md"
             >
-              <span>VISIT HTTPS://DINEBILL.VERCEL.APP/</span>
-              <ArrowUpRight className="w-4 h-4 stroke-[2.5]" />
+              <span className="truncate">VISIT {liveUrl}</span>
+              <ArrowUpRight className="w-4 h-4 stroke-[2.5] shrink-0" />
             </a>
           ) : (
             <span className="font-mono text-xs font-bold text-gray-600 uppercase">

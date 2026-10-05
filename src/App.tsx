@@ -7,10 +7,10 @@ import React, { useState, useEffect } from 'react';
 import { motion, useScroll, useSpring } from 'motion/react';
 import { Navbar } from './components/Navbar';
 import { HeroSection } from './components/HeroSection';
-import { ProjectsSection, PROJECTS } from './components/ProjectsSection';
+import { ProjectsSection } from './components/ProjectsSection';
 import { AboutSection } from './components/AboutSection';
 import { SkillsSection } from './components/SkillsSection';
-import { GallerySection, DEFAULT_GALLERY_ITEMS } from './components/GallerySection';
+import { GallerySection } from './components/GallerySection';
 import { ContactSection } from './components/ContactSection';
 import { ProjectModal } from './components/ProjectModal';
 import { ContactModal } from './components/ContactModal';
@@ -18,6 +18,13 @@ import { AboutModal } from './components/AboutModal';
 import { AdminPanelModal } from './components/AdminPanelModal';
 import { Toast } from './components/Toast';
 import { Project, GalleryItem } from './types';
+import { DEFAULT_PROJECTS, DEFAULT_GALLERY_ITEMS } from './constants/defaultData';
+import {
+  DEFAULT_TAB_TITLE,
+  DEFAULT_FAVICON_SVG,
+  updateTabTitle,
+  updateFavicon,
+} from './utils/branding';
 import defaultPortrait from './assets/images/azim_pj_portrait_1790919863456.jpg';
 
 export default function App() {
@@ -27,6 +34,36 @@ export default function App() {
   const [isAboutModalOpen, setIsAboutModalOpen] = useState(false);
   const [isAdminOpen, setIsAdminOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  // Persistent Tab Title state
+  const [tabTitle, setTabTitle] = useState<string>(() => {
+    return localStorage.getItem('azim_tab_title') || DEFAULT_TAB_TITLE;
+  });
+
+  // Persistent Favicon state
+  const [faviconUrl, setFaviconUrl] = useState<string>(() => {
+    return localStorage.getItem('azim_favicon_url') || DEFAULT_FAVICON_SVG;
+  });
+
+  // Synchronize Tab Title and Favicon with DOM
+  useEffect(() => {
+    updateTabTitle(tabTitle);
+  }, [tabTitle]);
+
+  useEffect(() => {
+    updateFavicon(faviconUrl);
+  }, [faviconUrl]);
+
+  // Persistent Projects state
+  const [projects, setProjects] = useState<Project[]>(() => {
+    try {
+      const saved = localStorage.getItem('azim_portfolio_projects');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {
+      console.error(e);
+    }
+    return DEFAULT_PROJECTS;
+  });
 
   // Persistent Portrait state
   const [portraitUrl, setPortraitUrl] = useState<string>(() => {
@@ -77,9 +114,18 @@ export default function App() {
 
   const scrollToSection = (sectionId: string) => {
     setActiveSection(sectionId);
+    if (sectionId === 'home') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
     const element = document.getElementById(sectionId);
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+      const navHeight = window.innerWidth >= 640 ? 80 : 64;
+      const elementPosition = element.getBoundingClientRect().top + window.scrollY;
+      window.scrollTo({
+        top: Math.max(0, elementPosition - navHeight),
+        behavior: 'smooth',
+      });
     }
   };
 
@@ -92,7 +138,89 @@ export default function App() {
     }, 3500);
   };
 
-  // Admin handlers
+  // Branding handlers
+  const handleUpdateBranding = (newTitle: string, newFavicon: string) => {
+    setTabTitle(newTitle);
+    setFaviconUrl(newFavicon);
+    try {
+      localStorage.setItem('azim_tab_title', newTitle);
+      localStorage.setItem('azim_favicon_url', newFavicon);
+    } catch (e) {
+      console.error('LocalStorage write failed:', e);
+    }
+    updateTabTitle(newTitle);
+    updateFavicon(newFavicon);
+    setToastMessage('TAB TITLE & FAVICON UPDATED');
+    setTimeout(() => setToastMessage(null), 3000);
+  };
+
+  const handleResetBranding = () => {
+    setTabTitle(DEFAULT_TAB_TITLE);
+    setFaviconUrl(DEFAULT_FAVICON_SVG);
+    localStorage.removeItem('azim_tab_title');
+    localStorage.removeItem('azim_favicon_url');
+    updateTabTitle(DEFAULT_TAB_TITLE);
+    updateFavicon(DEFAULT_FAVICON_SVG);
+    setToastMessage('BRANDING RESTORED TO DEFAULT');
+    setTimeout(() => setToastMessage(null), 3000);
+  };
+
+  // Projects handlers
+  const handleAddProject = (newProject: Project) => {
+    const updated = [newProject, ...projects];
+    setProjects(updated);
+    try {
+      localStorage.setItem('azim_portfolio_projects', JSON.stringify(updated));
+    } catch (e) {
+      console.error('LocalStorage write failed:', e);
+    }
+    setToastMessage(`ADDED PROJECT: ${newProject.title}`);
+    setTimeout(() => setToastMessage(null), 3000);
+  };
+
+  const handleUpdateProject = (updatedProject: Project) => {
+    const updated = projects.map((p) =>
+      p.id === updatedProject.id ? updatedProject : p
+    );
+    setProjects(updated);
+    try {
+      localStorage.setItem('azim_portfolio_projects', JSON.stringify(updated));
+    } catch (e) {
+      console.error('LocalStorage write failed:', e);
+    }
+    setToastMessage(`UPDATED PROJECT: ${updatedProject.title}`);
+    setTimeout(() => setToastMessage(null), 3000);
+  };
+
+  const handleDeleteProject = (id: string) => {
+    const updated = projects.filter((p) => p.id !== id);
+    setProjects(updated);
+    try {
+      localStorage.setItem('azim_portfolio_projects', JSON.stringify(updated));
+    } catch (e) {
+      console.error('LocalStorage write failed:', e);
+    }
+    setToastMessage('PROJECT REMOVED FROM ARCHIVE');
+    setTimeout(() => setToastMessage(null), 3000);
+  };
+
+  const handleReorderProjects = (reordered: Project[]) => {
+    setProjects(reordered);
+    try {
+      localStorage.setItem('azim_portfolio_projects', JSON.stringify(reordered));
+    } catch (e) {
+      console.error('LocalStorage write failed:', e);
+    }
+  };
+
+  const handleResetProjects = () => {
+    setProjects(DEFAULT_PROJECTS);
+    localStorage.removeItem('azim_portfolio_projects');
+    setToastMessage('PROJECTS RESTORED TO DEFAULT');
+    setTimeout(() => setToastMessage(null), 3000);
+  };
+
+  // Portrait handlers
   const handleUpdatePortrait = (newUrl: string) => {
     setPortraitUrl(newUrl);
     localStorage.setItem('azim_custom_portrait', newUrl);
@@ -107,6 +235,7 @@ export default function App() {
     setTimeout(() => setToastMessage(null), 3000);
   };
 
+  // Gallery handlers
   const handleAddGalleryItem = (newItem: GalleryItem) => {
     const updated = [newItem, ...galleryItems];
     setGalleryItems(updated);
@@ -156,20 +285,21 @@ export default function App() {
       />
 
       {/* Main Content Sections */}
-      <main className="w-full max-w-full overflow-x-hidden">
+      <main className="w-full max-w-full overflow-x-hidden pt-16 sm:pt-20">
         {/* Section 01: Hero */}
         <HeroSection
           onViewWork={() => scrollToSection('projects')}
           onAboutMe={() => scrollToSection('about')}
         />
 
-        {/* Section 02: Projects */}
+        {/* Section 02: Dynamic Projects */}
         <ProjectsSection
+          projects={projects}
           onSelectProject={(project) => setSelectedProject(project)}
-          onSeeAllProjects={() => setSelectedProject(PROJECTS[0])}
+          onSeeAllProjects={() => setSelectedProject(projects[0] || null)}
         />
 
-        {/* Section 03: About Me (Dynamic portrait manageable via Admin) */}
+        {/* Section 03: About Me */}
         <AboutSection
           portraitUrl={portraitUrl}
           onMoreAboutMe={() => setIsAboutModalOpen(true)}
@@ -207,10 +337,20 @@ export default function App() {
         onConnect={() => setIsContactOpen(true)}
       />
 
-      {/* Admin Panel Modal (Protected with Passcode 3808) */}
+      {/* Full-Featured Admin Panel Modal */}
       <AdminPanelModal
         isOpen={isAdminOpen}
         onClose={() => setIsAdminOpen(false)}
+        currentTabTitle={tabTitle}
+        currentFaviconUrl={faviconUrl}
+        onUpdateBranding={handleUpdateBranding}
+        onResetBranding={handleResetBranding}
+        projects={projects}
+        onAddProject={handleAddProject}
+        onUpdateProject={handleUpdateProject}
+        onDeleteProject={handleDeleteProject}
+        onReorderProjects={handleReorderProjects}
+        onResetProjects={handleResetProjects}
         currentPortraitUrl={portraitUrl}
         onUpdatePortrait={handleUpdatePortrait}
         onResetPortrait={handleResetPortrait}

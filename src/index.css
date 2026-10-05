@@ -26,6 +26,7 @@
     background-color: #F4F0E6;
     color: #0A0A0A;
     scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
     overflow-x: hidden;
     width: 100%;
     max-width: 100vw;
