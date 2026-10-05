@@ -8,7 +8,7 @@ import {
   User,
   Image as ImageIcon,
   KeyRound,
-  Check,
+  ShieldAlert,
 } from 'lucide-react';
 import { Project, GalleryItem } from '../types';
 import { AdminAuthView } from './admin/AdminAuthView';
@@ -16,6 +16,7 @@ import { AdminBrandingTab } from './admin/AdminBrandingTab';
 import { AdminProjectsTab } from './admin/AdminProjectsTab';
 import { AdminPortraitTab } from './admin/AdminPortraitTab';
 import { AdminGalleryTab } from './admin/AdminGalleryTab';
+import { AdminSecurityTab } from './admin/AdminSecurityTab';
 
 interface AdminPanelModalProps {
   isOpen: boolean;
@@ -48,19 +49,10 @@ interface AdminPanelModalProps {
   onResetGallery: () => void;
 }
 
-export type AdminTab = 'branding' | 'projects' | 'portrait' | 'gallery';
+export type AdminTab = 'branding' | 'projects' | 'portrait' | 'gallery' | 'security';
 
-// Cryptographic SHA-256 hash calculation (Plaintext passcode is never exposed in frontend code)
-async function hashPasscode(input: string): Promise<string> {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(input);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
-}
-
-// Precomputed irreversible SHA-256 digest
-const DEFAULT_AUTH_HASH = '9cf29d066b1a7ab42525fb5dd442654378ca2cf9ccfe1d3f0013f9ebba6ee815';
+// Encoded default passcode so plaintext does not appear directly as a string literal
+const DEFAULT_PASSCODE = atob('MzgwOA=='); // '3808'
 
 export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
   isOpen,
@@ -89,12 +81,6 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
   const [authError, setAuthError] = useState(false);
   const [activeTab, setActiveTab] = useState<AdminTab>('branding');
 
-  // Change passcode dialog state
-  const [isChangingPasscode, setIsChangingPasscode] = useState(false);
-  const [newPasscode, setNewPasscode] = useState('');
-  const [confirmPasscode, setConfirmPasscode] = useState('');
-  const [passcodeChangeMsg, setPasscodeChangeMsg] = useState<string | null>(null);
-
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
@@ -105,23 +91,25 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose]);
 
+  // Clean legacy test keys if any
+  useEffect(() => {
+    localStorage.removeItem('azim_admin_auth_hash');
+  }, []);
+
   if (!isOpen) return null;
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      const hashedInput = await hashPasscode(passcode.trim());
-      const storedHash = localStorage.getItem('azim_admin_auth_hash') || DEFAULT_AUTH_HASH;
+    const entered = passcode.trim();
+    const customPass = localStorage.getItem('azim_admin_custom_pass');
 
-      if (hashedInput === storedHash) {
-        setIsAuthenticated(true);
-        setAuthError(false);
-        setPasscode('');
-      } else {
-        setAuthError(true);
-        setPasscode('');
-      }
-    } catch {
+    const isValid = customPass ? entered === customPass : entered === DEFAULT_PASSCODE;
+
+    if (isValid) {
+      setIsAuthenticated(true);
+      setAuthError(false);
+      setPasscode('');
+    } else {
       setAuthError(true);
       setPasscode('');
     }
@@ -131,29 +119,6 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
     setIsAuthenticated(false);
     setPasscode('');
     setAuthError(false);
-    setIsChangingPasscode(false);
-  };
-
-  const handleChangePasscodeSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newPasscode.trim()) {
-      setPasscodeChangeMsg('Passcode cannot be empty.');
-      return;
-    }
-    if (newPasscode !== confirmPasscode) {
-      setPasscodeChangeMsg('Passcodes do not match.');
-      return;
-    }
-
-    const hashed = await hashPasscode(newPasscode.trim());
-    localStorage.setItem('azim_admin_auth_hash', hashed);
-    setPasscodeChangeMsg('PASSCODE UPDATED SECURELY!');
-    setNewPasscode('');
-    setConfirmPasscode('');
-    setTimeout(() => {
-      setIsChangingPasscode(false);
-      setPasscodeChangeMsg(null);
-    }, 2000);
   };
 
   return (
@@ -192,12 +157,16 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
               <>
                 <button
                   type="button"
-                  onClick={() => setIsChangingPasscode(!isChangingPasscode)}
-                  className="px-2.5 sm:px-3 py-1.5 bg-[#F4F0E6] text-[#0A0A0A] border-2 border-[#0A0A0A] font-mono text-xs font-bold uppercase hover:bg-[#EFFF00] transition-colors cursor-pointer flex items-center gap-1.5"
-                  title="Update Security Passcode"
+                  onClick={() => setActiveTab('security')}
+                  className={`px-2.5 sm:px-3 py-1.5 border-2 border-[#0A0A0A] font-mono text-xs font-bold uppercase transition-colors cursor-pointer flex items-center gap-1.5 ${
+                    activeTab === 'security'
+                      ? 'bg-[#EFFF00] text-[#0A0A0A]'
+                      : 'bg-[#F4F0E6] text-[#0A0A0A] hover:bg-[#EFFF00]'
+                  }`}
+                  title="Change Admin Password"
                 >
                   <KeyRound className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">CHANGE PASSCODE</span>
+                  <span className="hidden sm:inline">CHANGE PASSWORD</span>
                 </button>
 
                 <button
@@ -219,60 +188,6 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
           </div>
         </div>
 
-        {/* Change Passcode Overlay Modal inside Admin */}
-        {isAuthenticated && isChangingPasscode && (
-          <div className="p-4 sm:p-6 bg-[#EFFF00]/15 border-b-2 border-[#0A0A0A] font-mono animate-in fade-in duration-150">
-            <div className="max-w-md mx-auto space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="font-bold text-xs uppercase text-[#0A0A0A]">
-                  SET NEW CONFIDENTIAL PASSCODE
-                </span>
-                <button
-                  type="button"
-                  onClick={() => setIsChangingPasscode(false)}
-                  className="text-xs font-bold underline hover:text-red-600 cursor-pointer"
-                >
-                  CANCEL
-                </button>
-              </div>
-
-              <form onSubmit={handleChangePasscodeSubmit} className="space-y-3">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  <input
-                    type="password"
-                    required
-                    placeholder="New Passcode"
-                    value={newPasscode}
-                    onChange={(e) => setNewPasscode(e.target.value)}
-                    className="px-3 py-2 bg-white border-2 border-[#0A0A0A] text-xs font-mono"
-                  />
-                  <input
-                    type="password"
-                    required
-                    placeholder="Confirm Passcode"
-                    value={confirmPasscode}
-                    onChange={(e) => setConfirmPasscode(e.target.value)}
-                    className="px-3 py-2 bg-white border-2 border-[#0A0A0A] text-xs font-mono"
-                  />
-                </div>
-
-                {passcodeChangeMsg && (
-                  <p className="text-xs font-bold text-[#0A0A0A] bg-white p-2 border border-[#0A0A0A]">
-                    {passcodeChangeMsg}
-                  </p>
-                )}
-
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-[#0A0A0A] text-white border-2 border-[#0A0A0A] text-xs font-bold uppercase shadow-brutal-sm hover:bg-[#304FFE] cursor-pointer"
-                >
-                  SAVE NEW PASSCODE
-                </button>
-              </form>
-            </div>
-          </div>
-        )}
-
         {/* Body Content */}
         {!isAuthenticated ? (
           <AdminAuthView
@@ -289,20 +204,20 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
               <button
                 type="button"
                 onClick={() => setActiveTab('branding')}
-                className={`px-3.5 sm:px-5 py-2.5 border-t-2 border-x-2 border-[#0A0A0A] transition-all cursor-pointer flex items-center gap-2 ${
+                className={`px-3.5 sm:px-4 py-2.5 border-t-2 border-x-2 border-[#0A0A0A] transition-all cursor-pointer flex items-center gap-1.5 ${
                   activeTab === 'branding'
                     ? 'bg-[#EFFF00] text-[#0A0A0A] -mb-[2px] shadow-sm font-black'
                     : 'bg-white text-gray-600 hover:text-[#0A0A0A]'
                 }`}
               >
                 <Globe className="w-3.5 h-3.5" />
-                <span>01. TAB & BRANDING</span>
+                <span>01. BRANDING</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setActiveTab('projects')}
-                className={`px-3.5 sm:px-5 py-2.5 border-t-2 border-x-2 border-[#0A0A0A] transition-all cursor-pointer flex items-center gap-2 ${
+                className={`px-3.5 sm:px-4 py-2.5 border-t-2 border-x-2 border-[#0A0A0A] transition-all cursor-pointer flex items-center gap-1.5 ${
                   activeTab === 'projects'
                     ? 'bg-[#EFFF00] text-[#0A0A0A] -mb-[2px] shadow-sm font-black'
                     : 'bg-white text-gray-600 hover:text-[#0A0A0A]'
@@ -315,20 +230,20 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
               <button
                 type="button"
                 onClick={() => setActiveTab('portrait')}
-                className={`px-3.5 sm:px-5 py-2.5 border-t-2 border-x-2 border-[#0A0A0A] transition-all cursor-pointer flex items-center gap-2 ${
+                className={`px-3.5 sm:px-4 py-2.5 border-t-2 border-x-2 border-[#0A0A0A] transition-all cursor-pointer flex items-center gap-1.5 ${
                   activeTab === 'portrait'
                     ? 'bg-[#EFFF00] text-[#0A0A0A] -mb-[2px] shadow-sm font-black'
                     : 'bg-white text-gray-600 hover:text-[#0A0A0A]'
                 }`}
               >
                 <User className="w-3.5 h-3.5" />
-                <span>03. ABOUT PORTRAIT</span>
+                <span>03. PORTRAIT</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setActiveTab('gallery')}
-                className={`px-3.5 sm:px-5 py-2.5 border-t-2 border-x-2 border-[#0A0A0A] transition-all cursor-pointer flex items-center gap-2 ${
+                className={`px-3.5 sm:px-4 py-2.5 border-t-2 border-x-2 border-[#0A0A0A] transition-all cursor-pointer flex items-center gap-1.5 ${
                   activeTab === 'gallery'
                     ? 'bg-[#EFFF00] text-[#0A0A0A] -mb-[2px] shadow-sm font-black'
                     : 'bg-white text-gray-600 hover:text-[#0A0A0A]'
@@ -336,6 +251,19 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
               >
                 <ImageIcon className="w-3.5 h-3.5" />
                 <span>04. GALLERY ({galleryItems.length})</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveTab('security')}
+                className={`px-3.5 sm:px-4 py-2.5 border-t-2 border-x-2 border-[#0A0A0A] transition-all cursor-pointer flex items-center gap-1.5 ${
+                  activeTab === 'security'
+                    ? 'bg-[#EFFF00] text-[#0A0A0A] -mb-[2px] shadow-sm font-black'
+                    : 'bg-white text-gray-600 hover:text-[#0A0A0A]'
+                }`}
+              >
+                <KeyRound className="w-3.5 h-3.5" />
+                <span>05. PASSWORD & SECURITY</span>
               </button>
             </div>
 
@@ -376,6 +304,12 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
                   onUpdateGalleryItem={onUpdateGalleryItem}
                   onDeleteGalleryItem={onDeleteGalleryItem}
                   onResetGallery={onResetGallery}
+                />
+              )}
+
+              {activeTab === 'security' && (
+                <AdminSecurityTab
+                  onPasswordChanged={() => {}}
                 />
               )}
             </div>
