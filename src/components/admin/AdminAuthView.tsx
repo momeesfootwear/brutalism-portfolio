@@ -46,19 +46,12 @@ export const AdminAuthView: React.FC<AdminAuthViewProps> = ({
             autoFocus
             value={passcode}
             onChange={(e) => setPasscode(e.target.value)}
-            placeholder="••••"
+            placeholder="••••••••"
             className="w-full px-4 py-3 bg-[#F4F0E6] border-2 border-[#0A0A0A] font-mono text-lg font-bold tracking-widest text-[#0A0A0A] focus:outline-hidden focus:bg-[#EFFF00]/20"
           />
-          <div className="flex items-center justify-between mt-1 text-[11px] font-mono text-gray-500">
-            <span>Security code: 3808</span>
-            <button
-              type="button"
-              onClick={() => setPasscode('3808')}
-              className="text-[#304FFE] hover:underline font-bold cursor-pointer"
-            >
-              Autofill 3808
-            </button>
-          </div>
+          <p className="mt-1.5 text-[11px] font-mono text-gray-500">
+            Confidential administrative access.
+          </p>
         </div>
 
         {authError && (

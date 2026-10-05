@@ -7,6 +7,8 @@ import {
   Globe,
   User,
   Image as ImageIcon,
+  KeyRound,
+  Check,
 } from 'lucide-react';
 import { Project, GalleryItem } from '../types';
 import { AdminAuthView } from './admin/AdminAuthView';
@@ -48,6 +50,18 @@ interface AdminPanelModalProps {
 
 export type AdminTab = 'branding' | 'projects' | 'portrait' | 'gallery';
 
+// Cryptographic SHA-256 hash calculation (Plaintext passcode is never exposed in frontend code)
+async function hashPasscode(input: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(input);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+// Precomputed irreversible SHA-256 digest
+const DEFAULT_AUTH_HASH = '9cf29d066b1a7ab42525fb5dd442654378ca2cf9ccfe1d3f0013f9ebba6ee815';
+
 export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
   isOpen,
   onClose,
@@ -75,6 +89,12 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
   const [authError, setAuthError] = useState(false);
   const [activeTab, setActiveTab] = useState<AdminTab>('branding');
 
+  // Change passcode dialog state
+  const [isChangingPasscode, setIsChangingPasscode] = useState(false);
+  const [newPasscode, setNewPasscode] = useState('');
+  const [confirmPasscode, setConfirmPasscode] = useState('');
+  const [passcodeChangeMsg, setPasscodeChangeMsg] = useState<string | null>(null);
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
@@ -87,13 +107,21 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
 
   if (!isOpen) return null;
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (passcode.trim() === '3808') {
-      setIsAuthenticated(true);
-      setAuthError(false);
-      setPasscode('');
-    } else {
+    try {
+      const hashedInput = await hashPasscode(passcode.trim());
+      const storedHash = localStorage.getItem('azim_admin_auth_hash') || DEFAULT_AUTH_HASH;
+
+      if (hashedInput === storedHash) {
+        setIsAuthenticated(true);
+        setAuthError(false);
+        setPasscode('');
+      } else {
+        setAuthError(true);
+        setPasscode('');
+      }
+    } catch {
       setAuthError(true);
       setPasscode('');
     }
@@ -103,6 +131,29 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
     setIsAuthenticated(false);
     setPasscode('');
     setAuthError(false);
+    setIsChangingPasscode(false);
+  };
+
+  const handleChangePasscodeSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newPasscode.trim()) {
+      setPasscodeChangeMsg('Passcode cannot be empty.');
+      return;
+    }
+    if (newPasscode !== confirmPasscode) {
+      setPasscodeChangeMsg('Passcodes do not match.');
+      return;
+    }
+
+    const hashed = await hashPasscode(newPasscode.trim());
+    localStorage.setItem('azim_admin_auth_hash', hashed);
+    setPasscodeChangeMsg('PASSCODE UPDATED SECURELY!');
+    setNewPasscode('');
+    setConfirmPasscode('');
+    setTimeout(() => {
+      setIsChangingPasscode(false);
+      setPasscodeChangeMsg(null);
+    }, 2000);
   };
 
   return (
@@ -130,7 +181,7 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
               </h3>
               <p className="font-mono text-xs text-gray-600">
                 {isAuthenticated
-                  ? 'System unlocked · Branding, Projects, & Media Manager'
+                  ? 'System Unlocked · Confidential Media & Config Manager'
                   : 'Authorized Personnel Verification Required'}
               </p>
             </div>
@@ -138,12 +189,25 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
 
           <div className="flex items-center gap-2 sm:gap-3">
             {isAuthenticated && (
-              <button
-                onClick={handleLogout}
-                className="px-3 py-1.5 bg-[#F4F0E6] text-[#0A0A0A] border-2 border-[#0A0A0A] font-mono text-xs font-bold uppercase hover:bg-[#0A0A0A] hover:text-white transition-colors cursor-pointer"
-              >
-                LOCK CONSOLE
-              </button>
+              <>
+                <button
+                  type="button"
+                  onClick={() => setIsChangingPasscode(!isChangingPasscode)}
+                  className="px-2.5 sm:px-3 py-1.5 bg-[#F4F0E6] text-[#0A0A0A] border-2 border-[#0A0A0A] font-mono text-xs font-bold uppercase hover:bg-[#EFFF00] transition-colors cursor-pointer flex items-center gap-1.5"
+                  title="Update Security Passcode"
+                >
+                  <KeyRound className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">CHANGE PASSCODE</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="px-3 py-1.5 bg-[#F4F0E6] text-[#0A0A0A] border-2 border-[#0A0A0A] font-mono text-xs font-bold uppercase hover:bg-[#0A0A0A] hover:text-white transition-colors cursor-pointer"
+                >
+                  LOCK CONSOLE
+                </button>
+              </>
             )}
             <button
               onClick={onClose}
@@ -154,6 +218,60 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
             </button>
           </div>
         </div>
+
+        {/* Change Passcode Overlay Modal inside Admin */}
+        {isAuthenticated && isChangingPasscode && (
+          <div className="p-4 sm:p-6 bg-[#EFFF00]/15 border-b-2 border-[#0A0A0A] font-mono animate-in fade-in duration-150">
+            <div className="max-w-md mx-auto space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-xs uppercase text-[#0A0A0A]">
+                  SET NEW CONFIDENTIAL PASSCODE
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setIsChangingPasscode(false)}
+                  className="text-xs font-bold underline hover:text-red-600 cursor-pointer"
+                >
+                  CANCEL
+                </button>
+              </div>
+
+              <form onSubmit={handleChangePasscodeSubmit} className="space-y-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  <input
+                    type="password"
+                    required
+                    placeholder="New Passcode"
+                    value={newPasscode}
+                    onChange={(e) => setNewPasscode(e.target.value)}
+                    className="px-3 py-2 bg-white border-2 border-[#0A0A0A] text-xs font-mono"
+                  />
+                  <input
+                    type="password"
+                    required
+                    placeholder="Confirm Passcode"
+                    value={confirmPasscode}
+                    onChange={(e) => setConfirmPasscode(e.target.value)}
+                    className="px-3 py-2 bg-white border-2 border-[#0A0A0A] text-xs font-mono"
+                  />
+                </div>
+
+                {passcodeChangeMsg && (
+                  <p className="text-xs font-bold text-[#0A0A0A] bg-white p-2 border border-[#0A0A0A]">
+                    {passcodeChangeMsg}
+                  </p>
+                )}
+
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-[#0A0A0A] text-white border-2 border-[#0A0A0A] text-xs font-bold uppercase shadow-brutal-sm hover:bg-[#304FFE] cursor-pointer"
+                >
+                  SAVE NEW PASSCODE
+                </button>
+              </form>
+            </div>
+          </div>
+        )}
 
         {/* Body Content */}
         {!isAuthenticated ? (
