@@ -24,7 +24,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
       id="home"
       className="relative w-full border-b-2 border-[#0A0A0A] bg-[#F4F0E6] overflow-hidden"
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 py-10 sm:py-20 lg:py-28">
+      <div className="site-container py-10 sm:py-20 lg:py-28">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 lg:gap-8 items-center">
           
           {/* Section Number Line & Left Column */}
@@ -53,7 +53,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
                 className="space-y-1 sm:space-y-2 select-none"
               >
-                <h1 className="font-heading font-black text-[2.5rem] xs:text-5xl sm:text-7xl md:text-8xl lg:text-[6.2rem] xl:text-[7.2rem] leading-[0.88] tracking-tighter text-[#0A0A0A] uppercase break-words">
+                <h1 className="font-heading font-black text-[2.25rem] xs:text-5xl sm:text-7xl md:text-8xl lg:text-[6.2rem] xl:text-[7.2rem] leading-[0.88] tracking-tighter text-[#0A0A0A] uppercase break-words">
                   <div>IDEAS</div>
                   <div>INTO</div>
                   <div className="text-[#304FFE] flex items-baseline">
@@ -82,7 +82,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               >
                 <button
                   onClick={onViewWork}
-                  className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3.5 bg-[#304FFE] text-white font-mono font-bold text-xs sm:text-sm tracking-wider uppercase border-2 border-[#0A0A0A] shadow-brutal shadow-brutal-hover cursor-pointer"
+                  className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3.5 bg-[#304FFE] text-white font-mono font-bold text-xs sm:text-sm tracking-wider uppercase border-2 border-[#0A0A0A] shadow-brutal shadow-brutal-hover active:translate-x-0.5 active:translate-y-0.5 cursor-pointer"
                 >
                   <span>VIEW MY WORK</span>
                   <ArrowUpRight className="w-4 h-4 stroke-[2.5]" />
@@ -90,7 +90,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
                 <button
                   onClick={onAboutMe}
-                  className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3.5 bg-[#F4F0E6] text-[#0A0A0A] font-mono font-bold text-xs sm:text-sm tracking-wider uppercase border-2 border-[#0A0A0A] shadow-brutal shadow-brutal-hover cursor-pointer"
+                  className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3.5 bg-[#F4F0E6] text-[#0A0A0A] font-mono font-bold text-xs sm:text-sm tracking-wider uppercase border-2 border-[#0A0A0A] shadow-brutal shadow-brutal-hover active:translate-x-0.5 active:translate-y-0.5 cursor-pointer"
                 >
                   <span>ABOUT ME</span>
                   <ArrowDown className="w-4 h-4 stroke-[2.5]" />
@@ -100,7 +100,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           </div>
 
           {/* Right Column: Overlapping Dynamic Neobrutalist Cards */}
-          <div className="lg:col-span-5 relative flex items-center justify-center min-h-[290px] sm:min-h-[440px] lg:min-h-[500px] mt-4 lg:mt-0 w-full max-w-full overflow-hidden sm:overflow-visible py-4 sm:py-0">
+          <div className="lg:col-span-5 relative flex items-center justify-center min-h-[280px] xs:min-h-[320px] sm:min-h-[440px] lg:min-h-[500px] mt-4 lg:mt-0 w-full max-w-full overflow-hidden sm:overflow-visible py-4 sm:py-0">
             {/* Background Blue Card */}
             <motion.div
               style={{
@@ -109,18 +109,18 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               }}
               whileHover={{ scale: 1.02 }}
               transition={{ type: 'spring', stiffness: 200, damping: 20 }}
-              className="absolute w-[205px] sm:w-[320px] md:w-[340px] h-[260px] sm:h-[400px] md:h-[420px] bg-[#304FFE] border-2 border-[#0A0A0A] shadow-brutal sm:shadow-brutal-lg p-4 sm:p-6 flex flex-col justify-between select-none z-10"
+              className="absolute w-[180px] xs:w-[220px] sm:w-[320px] md:w-[340px] h-[230px] xs:h-[280px] sm:h-[400px] md:h-[420px] bg-[#304FFE] border-2 border-[#0A0A0A] shadow-brutal sm:shadow-brutal-lg p-3.5 xs:p-4 sm:p-6 flex flex-col justify-between select-none z-10"
             >
               <div className="flex justify-end">
-                <span className="font-mono font-bold text-white text-xs sm:text-base tracking-widest">
+                <span className="font-mono font-bold text-white text-[11px] xs:text-xs sm:text-base tracking-widest">
                   [ 01 ]
                 </span>
               </div>
-              <div className="text-right space-y-1 font-mono font-bold text-xs sm:text-sm tracking-widest text-[#0A0A0A]">
+              <div className="text-right space-y-0.5 xs:space-y-1 font-mono font-bold text-[10px] xs:text-xs sm:text-sm tracking-widest text-[#0A0A0A]">
                 <div>A STUDENT</div>
                 <div>STRATEGIST</div>
                 <div>BUILDER.</div>
-                <div className="text-base sm:text-lg">—</div>
+                <div className="text-sm sm:text-lg">—</div>
               </div>
             </motion.div>
 
@@ -132,15 +132,17 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               }}
               whileHover={{ scale: 1.04, rotate: -1 }}
               transition={{ type: 'spring', stiffness: 250, damping: 22 }}
-              className="relative w-[165px] sm:w-[250px] md:w-[270px] bg-[#EFFF00] border-2 border-[#0A0A0A] shadow-brutal sm:shadow-brutal-lg p-4 sm:p-7 select-none z-20 -mr-4 sm:-mr-24 -mt-8 sm:-mt-20 cursor-grab active:cursor-grabbing"
+              className="relative w-[150px] xs:w-[180px] sm:w-[250px] md:w-[270px] bg-[#EFFF00] border-2 border-[#0A0A0A] shadow-brutal sm:shadow-brutal-lg p-3.5 xs:p-4 sm:p-7 select-none z-20 -mr-2 xs:-mr-4 sm:-mr-24 -mt-6 xs:-mt-8 sm:-mt-20 cursor-grab active:cursor-grabbing"
             >
-              <div className="font-mono font-bold text-[11px] sm:text-sm tracking-wider text-[#0A0A0A] space-y-1.5 sm:space-y-2 uppercase leading-snug">
+              <div className="font-mono font-bold text-[10px] xs:text-xs sm:text-sm tracking-wider text-[#0A0A0A] space-y-1 xs:space-y-1.5 sm:space-y-2 uppercase leading-snug">
                 <div>BUSINESS</div>
                 <div>BRANDING</div>
                 <div>STRATEGY</div>
-                <div>MARKETING</div>
-                <div>PRODUCTS</div>
-                <div className="text-base pt-0.5 sm:pt-1 font-bold">—</div>
+                <div>EXECUTION.</div>
+              </div>
+              <div className="mt-3 xs:mt-4 sm:mt-8 pt-2 sm:pt-4 border-t-2 border-[#0A0A0A] flex items-center justify-between text-[8px] xs:text-[9px] sm:text-xs font-mono font-bold text-[#0A0A0A]">
+                <span>MINDSET</span>
+                <span>2026</span>
               </div>
             </motion.div>
           </div>

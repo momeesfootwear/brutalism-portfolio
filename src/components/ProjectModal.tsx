@@ -24,9 +24,9 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) 
   const liveUrl = project.liveUrl || 'https://dinebill.vercel.app/';
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 lg:p-8 bg-black/60 backdrop-blur-xs overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 lg:p-8 bg-black/60 backdrop-blur-xs overflow-y-auto">
       <div
-        className="relative w-full max-w-4xl bg-[#F4F0E6] border-3 border-[#0A0A0A] shadow-brutal-xl my-8 overflow-hidden animate-in fade-in zoom-in-95 duration-200"
+        className="relative w-full max-w-4xl bg-[#F4F0E6] border-3 border-[#0A0A0A] shadow-brutal-xl my-4 sm:my-8 overflow-hidden animate-in fade-in zoom-in-95 duration-200"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Top Header Banner */}

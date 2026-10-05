@@ -29,7 +29,7 @@ export const AboutSection: React.FC<AboutSectionProps> = ({
       id="about"
       className="relative w-full border-b-2 border-[#0A0A0A] bg-[#F4F0E6] py-10 sm:py-20 lg:py-24"
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12">
+      <div className="site-container">
         {/* Section Header */}
         <div className="flex items-center gap-3 sm:gap-4 pb-6 sm:pb-16 border-b-2 border-[#0A0A0A]">
           <div className="flex items-center gap-1.5 sm:gap-2 font-mono font-bold text-xs sm:text-base text-[#0A0A0A]">
@@ -48,7 +48,7 @@ export const AboutSection: React.FC<AboutSectionProps> = ({
           
           {/* Column 2 on desktop / Order 1 on mobile: Exact Portrait */}
           <div className="order-1 lg:order-2 lg:col-span-4 flex justify-center">
-            <div className="relative group max-w-[240px] sm:max-w-[320px] w-full">
+            <div className="relative group max-w-[220px] xs:max-w-[260px] sm:max-w-[320px] w-full">
               {/* Offset Background Accent Frame */}
               <div className="relative bg-[#304FFE] border-2 border-[#0A0A0A] shadow-brutal-md sm:shadow-brutal-lg p-2 transition-transform duration-300 group-hover:-translate-x-1 group-hover:-translate-y-1 group-hover:shadow-[10px_10px_0px_#0A0A0A]">
                 <div className="relative aspect-square overflow-hidden bg-[#304FFE] border-2 border-[#0A0A0A]">
@@ -77,7 +77,7 @@ export const AboutSection: React.FC<AboutSectionProps> = ({
             <div>
               <button
                 onClick={onMoreAboutMe}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-[#F4F0E6] text-[#0A0A0A] font-mono font-bold text-xs sm:text-sm tracking-wider uppercase border-2 border-[#0A0A0A] shadow-brutal shadow-brutal-hover cursor-pointer"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-[#F4F0E6] text-[#0A0A0A] font-mono font-bold text-xs sm:text-sm tracking-wider uppercase border-2 border-[#0A0A0A] shadow-brutal shadow-brutal-hover active:translate-x-0.5 active:translate-y-0.5 cursor-pointer"
               >
                 <span>MORE ABOUT ME</span>
                 <ArrowUpRight className="w-4 h-4 stroke-[2.5]" />
@@ -99,17 +99,17 @@ export const AboutSection: React.FC<AboutSectionProps> = ({
                     key={item.number}
                     onMouseEnter={() => setHoveredFocus(index)}
                     onMouseLeave={() => setHoveredFocus(null)}
-                    className={`flex items-center gap-3 py-2 px-3 transition-all duration-150 border-2 ${
+                    className={`flex items-center justify-between p-2.5 sm:p-3 border-2 border-[#0A0A0A] transition-all duration-150 select-none ${
                       isHovered
-                        ? 'border-[#0A0A0A] bg-[#EFFF00] shadow-brutal-sm translate-x-1'
-                        : 'border-[#0A0A0A]/20 sm:border-transparent hover:border-[#0A0A0A] bg-white sm:bg-transparent'
+                        ? 'bg-[#EFFF00] shadow-brutal-sm -translate-x-1 -translate-y-1'
+                        : 'bg-white shadow-xs'
                     }`}
                   >
-                    <span className="font-bold text-xs sm:text-sm text-[#0A0A0A] tracking-wider shrink-0">
-                      {item.number}
-                    </span>
-                    <span className="font-semibold text-xs sm:text-sm text-[#0A0A0A]">
+                    <span className="font-bold text-xs sm:text-sm text-[#0A0A0A]">
                       {item.title}
+                    </span>
+                    <span className="text-[10px] sm:text-xs font-bold text-gray-500">
+                      [{item.number}]
                     </span>
                   </div>
                 );

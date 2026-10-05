@@ -26,7 +26,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
       id="contact"
       className="relative w-full bg-[#F4F0E6] py-10 sm:py-20 lg:py-28"
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12">
+      <div className="site-container">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-8 items-center">
           
           {/* Left Column: Number 06 & Massive Heading (col-span-4) */}
@@ -69,7 +69,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 pt-1 sm:pt-2">
               <button
                 onClick={onOpenMessageModal}
-                className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3.5 bg-[#304FFE] text-white font-mono font-bold text-xs sm:text-sm tracking-wider uppercase border-2 border-[#0A0A0A] shadow-brutal shadow-brutal-hover cursor-pointer"
+                className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3.5 bg-[#304FFE] text-white font-mono font-bold text-xs sm:text-sm tracking-wider uppercase border-2 border-[#0A0A0A] shadow-brutal shadow-brutal-hover active:translate-x-0.5 active:translate-y-0.5 cursor-pointer"
               >
                 <span>SEND A MESSAGE</span>
                 <ArrowUpRight className="w-4 h-4 stroke-[2.5]" />
@@ -77,7 +77,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
 
               <button
                 onClick={onCopyEmail}
-                className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3.5 bg-[#F4F0E6] text-[#0A0A0A] font-mono font-bold text-xs sm:text-sm tracking-wider uppercase border-2 border-[#0A0A0A] shadow-brutal shadow-brutal-hover cursor-pointer"
+                className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3.5 bg-[#F4F0E6] text-[#0A0A0A] font-mono font-bold text-xs sm:text-sm tracking-wider uppercase border-2 border-[#0A0A0A] shadow-brutal shadow-brutal-hover active:translate-x-0.5 active:translate-y-0.5 cursor-pointer"
               >
                 <span>EMAIL ME</span>
                 <Mail className="w-4 h-4 stroke-[2.5]" />
@@ -86,7 +86,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
           </div>
 
           {/* Right Column: Social Links with Left Divider Line on Desktop, Clean Brutalist Grid on Mobile (col-span-3) */}
-          <div className="lg:col-span-3 lg:border-l-2 lg:border-[#0A0A0A] lg:pl-8 pt-4 lg:pt-0">
+          <div className="lg:col-span-3 lg:border-l-2 lg:border-[#0A0A0A] lg:pl-8 pt-2 lg:pt-0">
             <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-1 gap-2.5 font-mono text-xs sm:text-sm lg:text-base font-bold">
               {socials.map((social) => (
                 <a
@@ -94,7 +94,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
                   href={social.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group flex items-center justify-between p-2.5 sm:p-3 lg:p-0 lg:py-1 border-2 border-[#0A0A0A] lg:border-none bg-white lg:bg-transparent shadow-brutal-sm lg:shadow-none text-[#0A0A0A] hover:text-[#304FFE] hover:bg-[#EFFF00] lg:hover:bg-transparent transition-all"
+                  className="group flex items-center justify-between p-3 lg:p-0 lg:py-1 border-2 border-[#0A0A0A] lg:border-none bg-white lg:bg-transparent shadow-brutal-sm lg:shadow-none text-[#0A0A0A] hover:text-[#304FFE] hover:bg-[#EFFF00] lg:hover:bg-transparent transition-all active:translate-x-0.5 active:translate-y-0.5"
                 >
                   <span className="tracking-wider">{social.name}</span>
                   <ArrowUpRight className="w-4 h-4 stroke-[2.5] transition-transform duration-200 group-hover:translate-x-1 group-hover:-translate-y-1" />

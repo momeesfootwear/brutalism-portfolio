@@ -17,9 +17,9 @@ export const SkillsSection: React.FC = () => {
       id="skills"
       className="relative w-full border-b-2 border-[#0A0A0A] bg-[#F4F0E6] py-10 sm:py-20 lg:py-24"
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12">
+      <div className="site-container">
         {/* Section Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-6 sm:pb-14 border-b-2 border-[#0A0A0A]">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-6 sm:pb-14 border-b-2 border-[#0A0A0A] gap-2">
           <div className="flex items-center gap-3 sm:gap-4">
             <div className="flex items-center gap-1.5 sm:gap-2 font-mono font-bold text-xs sm:text-base text-[#0A0A0A]">
               <span className="w-[2px] h-5 sm:h-6 bg-[#0A0A0A] inline-block mr-1" />
@@ -32,7 +32,7 @@ export const SkillsSection: React.FC = () => {
             </h2>
           </div>
 
-          <div className="mt-2 sm:mt-0 font-mono text-xs sm:text-sm font-bold tracking-widest text-[#0A0A0A] uppercase">
+          <div className="mt-1 sm:mt-0 font-mono text-xs sm:text-sm font-bold tracking-widest text-[#0A0A0A] uppercase">
             ALWAYS LEARNING —
           </div>
         </div>
@@ -42,7 +42,7 @@ export const SkillsSection: React.FC = () => {
           {SKILLS_LIST.map((skillName) => (
             <div
               key={skillName}
-              className="w-full min-w-0 text-center p-2.5 sm:p-5 font-mono text-[10px] xs:text-[11px] sm:text-sm font-bold tracking-wide uppercase border-2 border-[#0A0A0A] bg-[#F4F0E6] shadow-brutal-sm hover:shadow-brutal hover:-translate-x-0.5 hover:-translate-y-0.5 hover:bg-white transition-all duration-150 select-none flex items-center justify-center min-h-[48px] sm:min-h-[58px] break-words leading-tight"
+              className="w-full min-w-0 text-center p-2.5 xs:p-3 sm:p-5 font-mono text-[10px] xs:text-[11px] sm:text-sm font-bold tracking-wide uppercase border-2 border-[#0A0A0A] bg-[#F4F0E6] shadow-brutal-sm hover:shadow-brutal hover:-translate-x-0.5 hover:-translate-y-0.5 hover:bg-white transition-all duration-150 select-none flex items-center justify-center min-h-[48px] sm:min-h-[58px] break-words leading-tight"
             >
               <span className="break-words line-clamp-2 sm:line-clamp-none">{skillName}</span>
             </div>

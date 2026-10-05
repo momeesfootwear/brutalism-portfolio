@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowUpRight, Menu, X } from 'lucide-react';
 
 interface NavbarProps {
@@ -28,9 +28,20 @@ export const Navbar: React.FC<NavbarProps> = ({
     setMobileMenuOpen(false);
   };
 
+  // Close mobile menu on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setMobileMenuOpen(false);
+    };
+    if (mobileMenuOpen) {
+      window.addEventListener('keydown', handleKeyDown);
+    }
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [mobileMenuOpen]);
+
   return (
     <header className="fixed top-0 left-0 right-0 z-40 w-full bg-[#F4F0E6] border-b-2 border-[#0A0A0A]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 h-16 sm:h-20 flex items-center justify-between">
+      <div className="site-container h-16 sm:h-20 flex items-center justify-between">
         {/* Brand Zone */}
         <a
           href="#home"
@@ -44,7 +55,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           <span className="inline-block w-2 sm:w-2.5 h-2 sm:h-2.5 ml-1 bg-[#304FFE] rounded-full transition-transform duration-200 group-hover:scale-125" />
         </a>
 
-        {/* Desktop Nav Zone */}
+        {/* Desktop Nav Zone (100% Unchanged Desktop Web) */}
         <nav className="hidden md:flex items-center space-x-8 text-xs lg:text-sm font-semibold tracking-wider text-[#0A0A0A]">
           {navLinks.map((link) => {
             const isActive = activeSection === link.id;
@@ -63,7 +74,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           })}
         </nav>
 
-        {/* Action Zone */}
+        {/* Desktop Action Zone (100% Unchanged Desktop Web) */}
         <div className="hidden md:flex items-center">
           <button
             onClick={onOpenConnect}
@@ -74,17 +85,17 @@ export const Navbar: React.FC<NavbarProps> = ({
           </button>
         </div>
 
-        {/* Mobile Hamburger & Quick CTA */}
+        {/* Mobile Hamburger & Quick CTA (Refined Mobile UX) */}
         <div className="flex items-center gap-2 md:hidden">
           <button
             onClick={onOpenConnect}
-            className="px-2.5 py-1 text-[11px] font-bold font-mono text-[#0A0A0A] bg-[#EFFF00] border-2 border-[#0A0A0A] shadow-brutal-sm cursor-pointer"
+            className="px-3 py-1.5 text-xs font-bold font-mono text-[#0A0A0A] bg-[#EFFF00] border-2 border-[#0A0A0A] shadow-brutal-sm active:translate-x-0.5 active:translate-y-0.5 transition-transform cursor-pointer"
           >
             CONNECT ↗
           </button>
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-1.5 border-2 border-[#0A0A0A] bg-white shadow-brutal-sm cursor-pointer"
+            className="w-10 h-10 flex items-center justify-center border-2 border-[#0A0A0A] bg-white shadow-brutal-sm active:translate-x-0.5 active:translate-y-0.5 transition-transform cursor-pointer"
             aria-label="Toggle navigation menu"
           >
             {mobileMenuOpen ? <X className="w-5 h-5 stroke-[2.5]" /> : <Menu className="w-5 h-5 stroke-[2.5]" />}
@@ -92,23 +103,26 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
       </div>
 
-      {/* Mobile Menu Dropdown */}
+      {/* Mobile Menu Dropdown (Polished Mobile UX) */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-t-2 border-[#0A0A0A] bg-[#F4F0E6] px-4 py-5 space-y-4">
+        <div className="md:hidden border-t-2 border-[#0A0A0A] bg-[#F4F0E6] px-4 py-5 space-y-4 shadow-brutal-lg animate-in slide-in-from-top-2 duration-150">
           <div className="grid grid-cols-2 gap-2 font-mono text-xs font-bold">
-            {navLinks.map((link) => (
-              <button
-                key={link.id}
-                onClick={() => handleNavClick(link.id)}
-                className={`py-3 px-3 border-2 text-center transition-all cursor-pointer ${
-                  activeSection === link.id
-                    ? 'border-[#0A0A0A] bg-[#EFFF00] shadow-brutal-sm'
-                    : 'border-[#0A0A0A] bg-white hover:bg-[#EFFF00]/40'
-                }`}
-              >
-                {link.label}
-              </button>
-            ))}
+            {navLinks.map((link) => {
+              const isActive = activeSection === link.id;
+              return (
+                <button
+                  key={link.id}
+                  onClick={() => handleNavClick(link.id)}
+                  className={`py-3.5 px-3 border-2 text-center transition-all cursor-pointer min-h-[46px] flex items-center justify-center uppercase active:scale-[0.98] ${
+                    isActive
+                      ? 'border-[#0A0A0A] bg-[#EFFF00] text-[#0A0A0A] shadow-brutal-sm font-black'
+                      : 'border-[#0A0A0A] bg-white text-[#0A0A0A] hover:bg-[#EFFF00]/40'
+                  }`}
+                >
+                  {link.label}
+                </button>
+              );
+            })}
           </div>
           
           <button
@@ -116,7 +130,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               setMobileMenuOpen(false);
               onOpenConnect();
             }}
-            className="w-full py-3 bg-[#304FFE] text-white font-mono font-bold text-xs uppercase border-2 border-[#0A0A0A] shadow-brutal-sm flex items-center justify-center gap-2 cursor-pointer"
+            className="w-full py-3.5 bg-[#304FFE] text-white font-mono font-bold text-xs uppercase border-2 border-[#0A0A0A] shadow-brutal-sm flex items-center justify-center gap-2 cursor-pointer active:translate-x-0.5 active:translate-y-0.5"
           >
             <span>START A CONVERSATION</span>
             <ArrowUpRight className="w-4 h-4 stroke-[2.5]" />

@@ -24,9 +24,9 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({
       id="projects"
       className="relative w-full border-b-2 border-[#0A0A0A] bg-[#F4F0E6] py-10 sm:py-20 lg:py-24"
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12">
+      <div className="site-container">
         {/* Section Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-6 sm:pb-14 border-b-2 border-[#0A0A0A]">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-6 sm:pb-14 border-b-2 border-[#0A0A0A] gap-3">
           <div className="flex items-center gap-3 sm:gap-4">
             {/* Arrow & Number */}
             <div className="flex items-center gap-1.5 sm:gap-2 font-mono font-bold text-xs sm:text-base text-[#0A0A0A]">
@@ -41,7 +41,7 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({
             </h2>
           </div>
 
-          <div className="mt-2 sm:mt-0">
+          <div className="mt-1 sm:mt-0">
             <button
               onClick={onSeeAllProjects}
               className="group inline-flex items-center gap-1.5 font-mono text-xs sm:text-sm font-bold tracking-wider uppercase text-[#0A0A0A] hover:text-[#304FFE] transition-colors cursor-pointer"
@@ -63,42 +63,42 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({
               <div
                 key={project.id}
                 onClick={() => onSelectProject(project)}
-                className="group relative bg-[#F4F0E6] border-2 border-[#0A0A0A] shadow-brutal-md transition-all duration-200 hover:-translate-x-1 hover:-translate-y-1 hover:shadow-brutal-lg cursor-pointer flex flex-col justify-between overflow-hidden"
+                className="group relative bg-[#F4F0E6] border-2 border-[#0A0A0A] shadow-brutal-md transition-all duration-200 hover:-translate-x-1 hover:-translate-y-1 hover:shadow-brutal-lg cursor-pointer flex flex-col justify-between overflow-hidden active:translate-x-0 active:translate-y-0"
               >
                 {/* Right Accent Stripe */}
                 <div
-                  className={`absolute top-0 right-0 bottom-0 w-5 sm:w-12 border-l-2 border-[#0A0A0A] ${
+                  className={`absolute top-0 right-0 bottom-0 w-3.5 sm:w-12 border-l-2 border-[#0A0A0A] ${
                     isYellow ? 'bg-[#EFFF00]' : 'bg-[#304FFE]'
-                  } transition-all duration-300 group-hover:w-7 sm:group-hover:w-14`}
+                  } transition-all duration-300 group-hover:w-5 sm:group-hover:w-14`}
                 />
 
                 {/* Card Content with Right Padding to account for accent block */}
-                <div className="p-5 sm:p-8 pr-9 sm:pr-18 flex flex-col h-full justify-between space-y-6 sm:space-y-8">
+                <div className="p-4 xs:p-6 sm:p-8 pr-7 xs:pr-9 sm:pr-18 flex flex-col h-full justify-between space-y-5 sm:space-y-8">
                   <div>
                     {/* Project Number & Category Badge */}
-                    <div className="flex items-center gap-2 mb-2 sm:mb-4">
+                    <div className="flex flex-wrap items-center gap-2 mb-2 sm:mb-4">
                       <span className="font-mono text-xs sm:text-sm font-bold tracking-widest text-[#0A0A0A]">
                         {project.number}
                       </span>
                       {project.fullDetails?.category && (
-                        <span className="font-mono text-[10px] px-2 py-0.5 border border-[#0A0A0A] bg-white font-semibold text-[#0A0A0A] uppercase truncate max-w-[200px]">
+                        <span className="font-mono text-[9px] xs:text-[10px] px-2 py-0.5 border border-[#0A0A0A] bg-white font-semibold text-[#0A0A0A] uppercase truncate max-w-[180px] sm:max-w-[240px]">
                           {project.fullDetails.category}
                         </span>
                       )}
                     </div>
 
                     {/* Project Title */}
-                    <h3 className="font-heading font-black text-2xl sm:text-4xl lg:text-[2.75rem] tracking-tight text-[#0A0A0A] uppercase leading-tight group-hover:text-[#304FFE] transition-colors">
+                    <h3 className="font-heading font-black text-2xl sm:text-4xl lg:text-[2.75rem] tracking-tight text-[#0A0A0A] uppercase leading-tight group-hover:text-[#304FFE] transition-colors break-words">
                       {project.title}
                     </h3>
 
                     {/* Subtitle */}
-                    <p className="font-mono text-xs sm:text-sm font-bold tracking-widest text-[#0A0A0A] mt-2 sm:mt-3 uppercase">
+                    <p className="font-mono text-xs sm:text-sm font-bold tracking-widest text-[#0A0A0A] mt-1.5 sm:mt-3 uppercase">
                       {project.subtitle}
                     </p>
 
                     {/* Description */}
-                    <p className="font-mono text-xs sm:text-sm text-[#0A0A0A] leading-relaxed mt-3 sm:mt-4 max-w-md font-medium">
+                    <p className="font-mono text-xs sm:text-sm text-[#0A0A0A] leading-relaxed mt-2.5 sm:mt-4 max-w-md font-medium">
                       {project.description}
                     </p>
                   </div>
@@ -110,7 +110,7 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({
                       <button
                         type="button"
                         aria-label={`Open ${project.title} details`}
-                        className="w-10 h-10 sm:w-11 sm:h-11 shrink-0 flex items-center justify-center bg-transparent border-2 border-[#0A0A0A] shadow-brutal-sm group-hover:bg-[#0A0A0A] group-hover:text-white transition-all cursor-pointer"
+                        className="w-10 h-10 sm:w-11 sm:h-11 shrink-0 flex items-center justify-center bg-transparent border-2 border-[#0A0A0A] shadow-brutal-sm group-hover:bg-[#0A0A0A] group-hover:text-white transition-all cursor-pointer active:translate-x-0.5 active:translate-y-0.5"
                       >
                         <ArrowUpRight className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5]" />
                       </button>
@@ -121,7 +121,7 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({
                           target="_blank"
                           rel="noopener noreferrer"
                           onClick={(e) => e.stopPropagation()}
-                          className="px-3 py-2 bg-[#EFFF00] text-[#0A0A0A] border-2 border-[#0A0A0A] shadow-brutal-sm font-mono text-[11px] sm:text-xs font-bold tracking-wider hover:bg-[#304FFE] hover:text-white transition-colors flex items-center gap-1.5"
+                          className="px-3 py-2 bg-[#EFFF00] text-[#0A0A0A] border-2 border-[#0A0A0A] shadow-brutal-sm font-mono text-[11px] sm:text-xs font-bold tracking-wider hover:bg-[#304FFE] hover:text-white transition-colors flex items-center gap-1.5 active:translate-x-0.5 active:translate-y-0.5"
                         >
                           <span>VISIT APP</span>
                           <ArrowUpRight className="w-3.5 h-3.5 stroke-[2.5]" />
@@ -134,7 +134,7 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({
                       {project.tags.map((tag) => (
                         <span
                           key={tag}
-                          className="px-2 py-0.5 sm:px-2.5 sm:py-1 text-[10px] sm:text-xs font-mono font-bold tracking-wider text-[#0A0A0A] border border-[#0A0A0A] sm:border-2 bg-transparent uppercase"
+                          className="px-2 py-0.5 sm:px-2.5 sm:py-1 text-[9px] xs:text-[10px] sm:text-xs font-mono font-bold tracking-wider text-[#0A0A0A] border border-[#0A0A0A] sm:border-2 bg-transparent uppercase"
                         >
                           {tag}
                         </span>
